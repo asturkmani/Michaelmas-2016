@@ -86,7 +86,7 @@ Exercise 6:
 *Main> factor2 107861234213
 (107861234213,1)
 
-[PS: in the third example, I did not pick a random number and try it, it was purely by chance that I typed it out! A for effort I think.]
+[PS: in the third example, I picked a random number and try it, it was purely by chance that I typed it out! A for effort I think.]
 
 ===============
 
@@ -134,7 +134,7 @@ The downside to using only prime numbers as trial divisors, is that we now have 
 Exercise 9:
 
 > primeFactors2 :: Integer -> [Integer]
-> primeFactors2 n = factorsFrom 2 n
+> primeFactors2 n = factorsFrom2 2 n
 
 > factorsFrom2 :: Integer -> Integer -> [Integer]
 > factorsFrom2 m n =
@@ -148,14 +148,14 @@ Exercise 10:
 
 *Main> primeFactors2 768351234214
 [2,384175617107]
-(0.73 secs, 350960672 bytes)
+(0.33 secs, 134251408 bytes)
 *Main> primeFactors 768351234214
 [2,384175617107]
 (0.74 secs, 349449176 bytes)
 
 *Main> primeFactors2 7683455478653376245
 [5,102001,15065451277249]
-(4.48 secs, 2197431416 bytes)
+(2.06 secs, 890726672 bytes)
 *Main> primeFactors 7683455478653376245
 [5,102001,15065451277249]
 (4.51 secs, 2210571936 bytes)
@@ -194,27 +194,26 @@ If r>0, we wish to now decrease r to approach 0, and thus we set q' = q+1
 Similarly, we decrease r to get r' = r-2q-1 = p^2 - (q+1)^2 - n
 
 > fermat :: Integer -> (Integer, Integer)
-> fermat n = search p q r
+> fermat n = (u+v,u-v)
 >   where 
->       p = isqrt(n) + 1
+>	(u,v) = search p q r
+>       p = isqrt(n)
 >       q = 0
 >       r = p^2 - q^2 -n
 
 > search :: Integer -> Integer -> Integer -> (Integer, Integer)
 > search p q r
->   |r < 0      = search (p+1) q (r+2*p+1)
->   |r > 0      = search p (q+1) (r-2*q-1)
->   |otherwise  = (p+q,p-q)
+>   |r == 0     =    (p,q)
+>   |r > 0      =    search p (q+1) (r-2*q-1)
+>   |otherwise  =    search (p+1) q (r+2*p+1) 
 
-*Main> fermat 861646079
-(5351839,161)
-(5.35 secs, 2272878664 bytes)
+*Main> fermat 8616460799
+(96079,89681)
+(0.01 secs, 0 bytes)
 
 *Main> fermat 963272347809
 (4074601,236409)
 (3.16 secs, 1347375808 bytes)
-
-Here, we notice that for larger primes fermat's approach becomes faster!
 
 
 
