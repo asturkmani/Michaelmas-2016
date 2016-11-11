@@ -1,0 +1,170 @@
+Questions
+
+Q1.
+
+SELECT	 S.sid AS Student_ID, E.grade AS Grade
+FROM	 student S, enroll E, course C
+WHERE	 S.sid = E.sid AND E.cno = C.cno AND C.cname = 'Thermodynamics' AND C.dname = E.dname;
+
+Output:
+
+ student_id | grade 
+------------+-------
+          1 |     3
+         15 |     3
+         45 |     3
+         49 |   3.5
+         56 |   2.5
+         88 |     2
+         93 |     4
+(7 rows)
+
+
+================================================
+Q2.
+
+SELECT	 C.cname AS course_name, string_agg(Se.pname, ',') AS professor_name
+FROM	 course C, enroll E, section Se
+WHERE	 E.sid = 16 AND E.sectno = Se.sectno AND E.cno = Se.cno AND C.cno = Se.cno AND E.dname = C.dname 
+GROUP BY C.cname;
+
+Output:
+
+       course_name        |   professor_name    
+--------------------------+---------------------
+ Compiler Construction    | Clark, E.
+ Intro to Programming     | Jones, J.,Smith, S.
+ Intro to Data Structures | Jones, J.
+(3 rows)
+
+
+================================================
+Q3.
+
+SELECT	 D.dname AS department_name
+FROM	 dept D, major M, student S
+WHERE	 S.sid = M.sid AND M.dname = D.dname AND S.age < 19
+GROUP BY D.dname
+HAVING	 COUNT(*) > 0;
+
+Output:
+    department_name     
+------------------------
+ Civil Engineering
+ Computer Sciences
+ Chemical Engineering
+ Mathematics
+ Industrial Engineering
+(5 rows)
+
+
+
+================================================
+Q4.
+
+SELECT	 Se.sectno AS section_number, C.cno AS course_number
+FROM	 course C, section Se, enroll E
+WHERE	 E.dname = Se.dname AND C.dname = Se.dname AND E.cno = C.cno AND C.cno = Se.cno AND E.sectno = Se.sectno
+GROUP BY Se.sectno, C.cno, C.dname
+HAVING	 COUNT(*) < 12;
+
+ section_number | course_number 
+----------------+---------------
+              1 |           310
+              1 |           375
+              1 |           514
+              1 |           561
+              1 |           461
+              1 |           365
+              1 |           302
+              1 |           467
+              1 |           462
+              2 |           302
+(10 rows)
+
+
+
+
+================================================
+Q5.
+
+INSERT INTO	prof(pname, dname)
+VALUES		('Benedikt, M.','Computer Sciences')
+
+    pname     |         dname          
+--------------+------------------------
+ Brian, C.    | Computer Sciences
+ Brown, S.    | Civil Engineering
+ Bucket, T.   | Sanitary Engineering
+ Clark, E.    | Civil Engineering
+ Edison, L.   | Chemical Engineering
+ Jones, J.    | Computer Sciences
+ Randolph, B. | Civil Engineering
+ Robinson, T. | Mathematics
+ Smith, S.    | Industrial Engineering
+ Walter, A.   | Industrial Engineering
+ Benedikt, M. | Computer Sciences
+(11 rows)
+
+
+OPTIONAL
+
+SELECT 	DISTINCT S.sid
+FROM    student S, section Se
+WHERE   S.sid NOT IN (	SELECT St.sid
+FROM student St, enroll E1,  (SELECT Se.sectno, Se.dname, Se.cno
+FROM	 course C, section Se, enroll E 
+WHERE	 E.dname = Se.dname AND C.dname = Se.dname AND E.cno = C.cno AND C.cno = Se.cno AND E.sectno = Se.sectno  
+GROUP BY Se.sectno, Se.cno, Se.dname 
+HAVING COUNT(*) <= 10) Se1
+WHERE St.sid = E1.sid AND E1.sectno = Se1.sectno AND E1.dname = Se1.dname AND E1.cno = Se1.cno);
+
+Output:
+
+ sid 
+-----
+  34
+  82
+  81
+  25
+  32
+   8
+  10
+  42
+  80
+  39
+ 100
+ 103
+  61
+  63
+  87
+  64
+  70
+  46
+  99
+  48
+  68
+  83
+  84
+  77
+  89
+  60
+  95
+  62
+  71
+   2
+  51
+  72
+  92
+  23
+  41
+  31
+  65
+  75
+  20
+  44
+   7
+(41 rows)
+
+
+
