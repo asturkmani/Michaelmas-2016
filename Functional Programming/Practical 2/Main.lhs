@@ -11,12 +11,28 @@ Draw a maze.
 ***************************************
 
 > drawMaze :: Maze -> IO()
-> drawMaze maze = putStr("Isn't that a-maze-ing!\n")
+> drawMaze maze = 
+>       putStr(concat [drawNS maze col i | i <- [row, row-1, ... 0] ]   )
+>       where 
+>           col = fst (sizeOf maze)
+>           row = snd (sizeOf maze)
 
-> drawEW :: [walls] -> Int -> Int -> String
-> drawEW theWalls row col =  
 
-> drawNS :: [walls] -> Int -> String
+> drawNS :: Maze -> Int -> Int -> String
+> drawNS maze rowNumber colSize =
+>       concat [ printwallNS ( hasWall maze (j,rowNumber) W ) | j <- [0..colSize]]
+
+> drawEW :: Maze -> Int -> Int  -> String
+> drawEW maze rowNumber colSize =
+>       concat [ printwallEW ( hasWall maze (j,rowNumber) S ) | j <- [0..colSize]]
+
+> printwallEW exists
+>   | exists = "+--"
+>   | otherwise = "+  "
+
+> printwallNS exists
+>   | exists = "|  "
+>   | otherwise = "   "
 
 ======================================================================
 
