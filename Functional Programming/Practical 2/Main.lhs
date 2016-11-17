@@ -12,11 +12,13 @@ Draw a maze.
 
 > drawMaze :: Maze -> IO()
 > drawMaze maze = 
->       putStr(concat [drawNS maze col i | i <- [row, row-1, ... 0] ]   )
->       where 
+>       putStr(drawnMaze maze (row+1) col)
+>       where
 >           col = fst (sizeOf maze)
 >           row = snd (sizeOf maze)
 
+> drawnMaze maze 0 col = []
+> drawnMaze maze row col = (drawNS maze (row-1) col) ++ "\n" ++ (drawEW maze (row-1) col) ++ "\n" ++ drawnMaze maze (row-1) col
 
 > drawNS :: Maze -> Int -> Int -> String
 > drawNS maze rowNumber colSize =
@@ -47,7 +49,31 @@ Solve the maze, giving a result of type:
 ***************************************
 
 > solveMaze :: Maze -> Place -> Place -> Path
-> solveMaze maze start target = error "I'm lost!  Please help me!"
+> solveMaze maze start target = solveMazeIter maze target  [(start, [] )]
+
+> solveMazeIter :: Maze -> Place -> [(Place, Path)] -> Path
+
+> solveMazeIter maze target paths
+>	| target == fst(head(paths)) = snd(head(paths))
+>	| otherwise = solveMazeIter maze target newPaths
+>		where newPaths = concat( map (returnValidNeighbours maze) paths)
+
+> returnValidNeighbours :: Maze -> (Place, Path) -> [(Place, Path)]
+> returnValidNeighbours maze placePathPair = 
+>		let
+>			north
+>				| hasWall maze (fst placePathPair) N = []
+>			    | otherwise = [ ( (move N (fst placePathPair)), (N:snd(placePathPair)) ) ]
+>			south
+>				| hasWall maze (fst placePathPair) S = []
+>			    | otherwise = [ ( (move S (fst placePathPair)), (S:snd(placePathPair)) ) ]
+>			east
+>				| hasWall maze (fst placePathPair) E = []
+>			    | otherwise = [ ( (move E (fst placePathPair)), (E:snd(placePathPair)) ) ]
+>			west
+>				| hasWall maze (fst placePathPair) W = []
+>			    | otherwise = [ ( (move W (fst placePathPair)), (W:snd(placePathPair)) ) ]
+>		in north ++ south ++ east ++ west
 
 ======================================================================
 
