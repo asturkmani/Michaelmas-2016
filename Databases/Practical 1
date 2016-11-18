@@ -25,8 +25,8 @@ Q2.
 
 SELECT	 C.cname AS course_name, string_agg(Se.pname, ',') AS professor_name
 FROM	 course C, enroll E, section Se
-WHERE	 E.sid = 16 AND E.sectno = Se.sectno AND E.cno = Se.cno AND C.cno = Se.cno AND E.dname = C.dname 
-GROUP BY C.cname;
+WHERE	 E.sid = 16 AND E.sectno = Se.sectno AND E.cno = Se.cno AND C.cno = Se.cno AND E.dname = C.dname AND Se.dname = E.dname
+GROUP BY C.cno, C.dname
 
 Output:
 
@@ -110,7 +110,7 @@ VALUES		('Benedikt, M.','Computer Sciences')
 OPTIONAL
 
 SELECT 	DISTINCT S.sid
-FROM    student S, section Se
+FROM    student S
 WHERE   S.sid NOT IN (	SELECT St.sid
 FROM student St, enroll E1,  (SELECT Se.sectno, Se.dname, Se.cno
 FROM	 course C, section Se, enroll E 

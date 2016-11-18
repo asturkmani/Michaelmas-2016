@@ -56,9 +56,11 @@ Solve the maze, giving a result of type:
 > solveMazeIter :: Maze -> Place -> [(Place, Path)] -> Path
 
 > solveMazeIter maze target paths
->	| target == fst(head(paths)) = snd(head(paths))
+>	| index /= -1 = reverse (snd(paths!! index))
 >	| otherwise = solveMazeIter maze target newPaths
->		where newPaths = concat( map (returnValidNeighbours maze) paths)
+>		where 
+>			newPaths = concat( map (returnValidNeighbours maze) paths)
+>			index = checkTargetInList target paths
 
 > returnValidNeighbours :: Maze -> (Place, Path) -> [(Place, Path)]
 > returnValidNeighbours maze placePathPair = 
@@ -75,15 +77,57 @@ Solve the maze, giving a result of type:
 >			west
 >				| hasWall maze (fst placePathPair) W = []
 >			    | otherwise = [ ( (move W (fst placePathPair)), (W:snd(placePathPair)) ) ]
->		in concat(north ++ south ++ east ++ west)
+>		in north ++ south ++ east ++ west
 
+================== FAST SOLVER MAZE ITER =================
 
-> checkTargetInList :: Place -> [(Place, Path)] -> Bool
-> checkTargetInList target paths =
->		| elem target placesInList = getIndex target placesInList
->		| otherwise = -1
+> fastSolveMaze :: Maze -> Place -> Place -> Path
+> fastSolveMaze maze start target = fastSolveMazeIter maze target  [(start, [] )] []
+
+> fastSolveMazeIter :: Maze -> Place -> [(Place, Path)] -> [Place] -> Path
+
+> fastSolveMazeIter maze target paths visited
+>	| index /= -1 = reverse (snd(paths!! index))
+>	| otherwise = fastSolveMazeIter maze target newPaths visitedNew
 >		where 
->			placesInList = map head paths
+>			newPaths = concat( map (checkIfVisitedAndReturn maze visited ) paths)
+>			index = checkTargetInList target paths
+>			visitedNew = updateVisitedList visited newPaths
+
+> updateVisitedList :: [Place] -> [(Place, Path)] ->[Place]
+> updateVisitedList visited [] = visited
+> updateVisitedList visited (x:xs) = fst(x): updateVisitedList visited xs
+
+> checkIfVisitedAndReturn :: Maze -> [Place] -> (Place, Path) -> [(Place, Path)]
+> checkIfVisitedAndReturn maze visited placePathPair
+>	| elem (fst placePathPair) visited = []
+>	| otherwise = returnValidNeighboursFast maze visited placePathPair
+
+
+> returnValidNeighboursFast :: Maze -> [Place] -> (Place, Path) -> [(Place, Path)]
+> returnValidNeighboursFast maze visited placePathPair = 
+>		let
+>			north
+>				| hasWall maze (fst placePathPair) N = []
+>			    | otherwise = [ ( (move N (fst placePathPair)), (N:snd(placePathPair)) ) ]
+>			south
+>				| hasWall maze (fst placePathPair) S = []
+>			    | otherwise = [ ( (move S (fst placePathPair)), (S:snd(placePathPair)) ) ]
+>			east
+>				| hasWall maze (fst placePathPair) E = []
+>			    | otherwise = [ ( (move E (fst placePathPair)), (E:snd(placePathPair)) ) ]
+>			west
+>				| hasWall maze (fst placePathPair) W = []
+>			    | otherwise = [ ( (move W (fst placePathPair)), (W:snd(placePathPair)) ) ]
+>		in north ++ south ++ east ++ west
+
+> checkTargetInList :: Place -> [(Place, Path)] -> Int
+> checkTargetInList target paths = case index of
+>		Nothing -> -1
+>		Just n -> n
+>		where 
+>			placesInList = map (fst) paths
+>			index = elemIndex target placesInList
 
 ======================================================================
 
