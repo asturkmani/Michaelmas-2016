@@ -80,11 +80,11 @@ Solve the maze, giving a result of type:
 
 > checkTargetInList :: Place -> [(Place, Path)] -> Bool
 > checkTargetInList target paths =
->		| index == Nothing = False
->		| just value = value 
+>		| elem target placesInList = getIndex target placesInList
+>		| otherwise = -1
 >		where 
 >			placesInList = map head paths
->			index = elemIndex target placesInList
+
 ======================================================================
 
 Some test mazes.  In both cases, the task is to find a path from the bottom
