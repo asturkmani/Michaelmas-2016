@@ -1,5 +1,7 @@
 > import Geography
 > import Maze
+> import Data.List
+> import Data.Maybe
 
 ======================================================================
 
@@ -73,8 +75,16 @@ Solve the maze, giving a result of type:
 >			west
 >				| hasWall maze (fst placePathPair) W = []
 >			    | otherwise = [ ( (move W (fst placePathPair)), (W:snd(placePathPair)) ) ]
->		in north ++ south ++ east ++ west
+>		in concat(north ++ south ++ east ++ west)
 
+
+> checkTargetInList :: Place -> [(Place, Path)] -> Bool
+> checkTargetInList target paths =
+>		| index == Nothing = False
+>		| just value = value 
+>		where 
+>			placesInList = map head paths
+>			index = elemIndex target placesInList
 ======================================================================
 
 Some test mazes.  In both cases, the task is to find a path from the bottom
