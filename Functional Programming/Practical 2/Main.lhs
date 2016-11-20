@@ -1,5 +1,5 @@
 > import Geography
-> import Maze
+> import MyMazeTrees
 > import Data.List
 > import Data.Maybe
 
@@ -37,6 +37,29 @@ Draw a maze.
 > printwallNS exists
 >   | exists = "|  "
 >   | otherwise = "   "
+
+
+============================= OUTPUT =================================
+
+*Main> drawMaze smallMaze 
+               
++--+--+--+--+  
+|     |  |  |  
++  +--+  +  +  
+|        |  |  
++--+  +  +  +  
+|     |     |  
++--+--+--+--+  
+
+*Main> drawMaze impossibleMaze 
+            
++--+--+--+  
+|     |  |  
++  +  +--+  
+|  |     |  
++  +--+  +  
+|        |  
++--+--+--+ 
 
 ======================================================================
 
@@ -79,7 +102,13 @@ Solve the maze, giving a result of type:
 >			    | otherwise = [ ( (move W (fst placePathPair)), (W:snd(placePathPair)) ) ]
 >		in north ++ south ++ east ++ west
 
-================== FAST SOLVER MAZE ITER =================
+============================= OUTPUT =================================
+
+*Main> solveMaze smallMaze (0,0) (3,2)
+[E,N,E,S,E,N,N]
+(0.00 secs, 220,232 bytes)
+
+======================== FAST SOLVER MAZE ITER =======================
 
 > fastSolveMaze :: Maze -> Place -> Place -> Path
 > fastSolveMaze maze start target = fastSolveMazeIter maze target  [(start, [] )] []
@@ -92,7 +121,7 @@ Solve the maze, giving a result of type:
 >		where 
 >			newPaths = concat( map (checkIfVisitedAndReturn maze visited ) paths)
 >			index = checkTargetInList target paths
->			visitedNew = updateVisitedList visited newPaths
+>			visitedNew = updateVisitedList visited paths
 
 > updateVisitedList :: [Place] -> [(Place, Path)] ->[Place]
 > updateVisitedList visited [] = visited
@@ -128,6 +157,16 @@ Solve the maze, giving a result of type:
 >		where 
 >			placesInList = map (fst) paths
 >			index = elemIndex target placesInList
+
+============================= OUTPUT =================================
+
+*Main> fastSolveMaze smallMaze (0,0) (3,2)
+[E,N,E,S,E,N,N]
+(0.00 secs, 131,528 bytes)
+
+*Main> fastSolveMaze largeMaze (0,0) (22,21)
+[N,N,N,N,N,N,N,N,N,E,E,E,N,W,W,W,N,E,E,E,N,W,W,W,N,E,E,E,E,E,N,N,N,W,S,S,W,W,W,W,N,N,N,E,S,S,E,E,N,W,N,N,W,W,N,E,E,E,E,E,E,N,W,W,W,W,W,W,N,E,E,E,E,E,E,E,S,S,S,S,E,E,N,N,N,N,E,E,E,E,S,W,W,W,S,S,S,E,N,N,E,E,E,S,W,W,S,S,W,W,W,W,W,S,E,E,E,S,W,W,W,S,S,S,E,S,S,S,E,N,N,N,E,S,S,S,S,W,W,W,S,E,E,E,S,W,W,W,S,E,E,E,E,S,S,E,E,E,E,E,E,E,S,E,E,E,N,W,W,N,N,N,E,S,S,E,E,N,W,N,E,N,N,W,S,W,W,W,W,S,W,N,N,N,W,W,W,N,N,N,E,S,S,E,N,N,N,W,W,N,N,N,N,N,E,S,S,S,S,E,E,E,E,E,E,E,S,W,W,W,W,W,S,E,E,E,E,E,E,N,N,N,W,W,W,W,N,E,E,N,W,W,N,E,E,N,W,W,W,N,N,N,E,S,S,E,N,N,E,E,E]
+(0.16 secs, 2,981,680 bytes)
 
 ======================================================================
 
@@ -205,3 +244,38 @@ And now an impossible maze
 > impossibleMaze =
 >   let walls = [((0,1), E), ((1,0),N), ((1,2), E), ((2,1), N)]
 >   in makeMaze (3,3) walls
+
+And now my special maze!
+
+> myMaze :: Maze
+> myMaze = 
+>	let walls = [ ((0,1),E),((0,1),N),((0,1),W),((2,0),E),((2,0),N),((2,0),W)]
+>	in makeMaze (3,3) walls
+
+*Main> drawMaze myMaze 
+            
++--+--+--+  
+|        |  
++--+  +  +  
+|  |     |  
++  +  +--+  
+|     |  |  
++--+--+--+  
+(0.04 secs, 259,408 bytes)
+
+> squareCenterMaze :: Maze
+> squareCenterMaze = 
+>	let walls = [ ((1,1),E),((1,1),N),((1,1),W),((1,1),S)]
+>	in makeMaze (3,3) walls
+
+*Main> drawMaze squareCenterMaze  
+            
++--+--+--+  
+|        |  
++  +--+  +  
+|  |  |  |  
++  +--+  +  
+|        |  
++--+--+--+  
+(0.03 secs, 255,832 bytes)
+
